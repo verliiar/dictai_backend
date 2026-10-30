@@ -98,7 +98,7 @@ func TestGetAudio_Success(t *testing.T) {
 
 	storage := &grpcTestStorage{
 		objects: map[string][]byte{
-			buildGRPCAudioObjectKey(workspaceID, audioID): payload,
+			buildGRPCAudioObjectKey(workspaceID, audioID, false): payload,
 		},
 	}
 	checker := &grpcTestAccessChecker{allowed: true}

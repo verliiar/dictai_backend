@@ -61,6 +61,10 @@ func (f *fakePublisher) PublishAudioUploaded(_ context.Context, event UploadedEv
 	return f.publishErr
 }
 
+func (f *fakePublisher) PublishAnonymousAudioUploaded(_ context.Context, _ UploadedEvent) error {
+	return errors.New("unexpected anonymous audio upload")
+}
+
 type fakeAccessChecker struct {
 	calls      int
 	allowed    bool

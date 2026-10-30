@@ -49,6 +49,10 @@ func (p *stubPublisher) PublishAudioUploaded(_ context.Context, _ application.Up
 	return p.publishErr
 }
 
+func (p *stubPublisher) PublishAnonymousAudioUploaded(_ context.Context, _ application.UploadedEvent) error {
+	return errors.New("unexpected anonymous audio upload")
+}
+
 type stubAccessChecker struct {
 	allowed bool
 	err     error
@@ -69,7 +73,7 @@ func TestUploadHandler_Success(t *testing.T) {
 		&stubPublisher{},
 		&stubAccessChecker{allowed: true},
 	)
-	h := NewUploadHandler(service, slog.Default())
+	h := NewUploadHandler(service, slog.Default(), "")
 
 	r := gin.New()
 	r.POST("/upload", func(c *gin.Context) {
@@ -102,7 +106,7 @@ func TestUploadHandler_Forbidden(t *testing.T) {
 		&stubPublisher{},
 		&stubAccessChecker{allowed: false},
 	)
-	h := NewUploadHandler(service, slog.Default())
+	h := NewUploadHandler(service, slog.Default(), "")
 
 	r := gin.New()
 	r.POST("/upload", func(c *gin.Context) {
@@ -130,7 +134,7 @@ func TestUploadHandler_BadRequestWhenFileMissing(t *testing.T) {
 		&stubPublisher{},
 		&stubAccessChecker{allowed: true},
 	)
-	h := NewUploadHandler(service, slog.Default())
+	h := NewUploadHandler(service, slog.Default(), "")
 
 	r := gin.New()
 	r.POST("/upload", func(c *gin.Context) {
@@ -162,7 +166,7 @@ func TestUploadHandler_InternalServerError(t *testing.T) {
 		&stubPublisher{publishErr: errors.New("nats is down")},
 		&stubAccessChecker{allowed: true},
 	)
-	h := NewUploadHandler(service, slog.Default())
+	h := NewUploadHandler(service, slog.Default(), "")
 
 	r := gin.New()
 	r.POST("/upload", func(c *gin.Context) {
